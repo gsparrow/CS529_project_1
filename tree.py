@@ -14,7 +14,6 @@ class Tree(object):
         self.headers=[]
         self.comparator=[]
 
-    # Write File Output functions {{{
     def file_read(self, filename):
         with open(filename) as csvfile:
             reader = csv.DictReader(csvfile)
@@ -22,6 +21,7 @@ class Tree(object):
             for row in reader:
                 self.data.append(row)
 
+    # Write File Output functions {{{
     def file_write_inorder(self, filename):
         if (self.left):
             self.left.write()
@@ -131,19 +131,16 @@ class Tree(object):
     # }}}
                     
     def base_information_gain(self, classifier):
-        classifier_values_count = {} #failures versus successes
+        classifier_values_count = {} #counts of the classification values
         classifier_values_set = set()
-        for datum in self.data:
+        for datum in self.data:                                             #from the values of the classifier, create a set
             classifier_values_set.add(datum.get(classifier))
-        for value in classifier_values_set:
-            classifier_values_count
+        classifier_values_count = dict.fromkeys(classifier_values_set, 0)   #from the set of classifier values, create a dictionary for counting them
         information_gain=0.0
         for datum in self.data:
-            if (datum.get(classifier)==1):
-                fvs[1]+=1
-            else:
-                fvs[0]+=1
-        information_gain=-(float(fvs[1]/len(self.data)))*math.log(float(fvs[1]/len(self.data)))-(float(fvs[0]/len(self.data)))*math.log(float(fvs[0]/len(self.data)))
+            classifier_values_count[classifier]+=1
+        for key in classifier_values_count.keys():
+            information_gain-=(float(float(classification_values_count.get(key))/len(self.data)))*math.log(float(float(classification_values_count.get(key))/len(self.data)))
         return information_gain
 
     def choose_comparator(self, classifier): #{{{
