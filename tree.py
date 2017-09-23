@@ -130,15 +130,32 @@ class Tree(object):
             exit()
     # }}}
                     
+    def base_information_gain(self, classifier):
+        classifier_values_count = {} #failures versus successes
+        classifier_values_set = set()
+        for datum in self.data:
+            classifier_values_set.add(datum.get(classifier))
+        for value in classifier_values_set:
+            classifier_values_count
+        information_gain=0.0
+        for datum in self.data:
+            if (datum.get(classifier)==1):
+                fvs[1]+=1
+            else:
+                fvs[0]+=1
+        information_gain=-(float(fvs[1]/len(self.data)))*math.log(float(fvs[1]/len(self.data)))-(float(fvs[0]/len(self.data)))*math.log(float(fvs[0]/len(self.data)))
+        return information_gain
 
-    def choose_comparator(self, classifier):
+    def choose_comparator(self, classifier): #{{{
         same=True
         temp_headers=[]
+        classifier_values_set = set()
+        for datum in self.data:
+            classifier_values_set.add(datum.get(classifier))
         if (self.data):
-            for iterator in range(1, (len(self.data))):
-                if (self.data[0].get(classifier) != self.data[iterator].get(classifier)):
-                    same=False
-            if (same):
+            for datum in self.data:
+                classifier_values_set.add(datum.get(classifier))
+            if (len(classifier_values_set) ==1):
                 self.comparator=int(self.data[0].get(classifier))
                 return
             else:
@@ -160,7 +177,7 @@ class Tree(object):
                 self.right.choose_comparator(classifier)
         else: #an error has occured, there is no data in this leaf
             return
-
+    # }}}
 
 my_file='altitude.csv'
 classifier='Class'
