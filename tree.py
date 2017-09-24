@@ -130,17 +130,28 @@ class Tree(object):
             exit()
     # }}}
                     
-    def base_information_gain(self, classifier):
+    def entropy(self, classifier): #evaluates the base information gain, from which other values are subtracted
         classifier_values_count = {} #counts of the classification values
         classifier_values_set = set()
+        information_gain=0.0
         for datum in self.data:                                             #from the values of the classifier, create a set
             classifier_values_set.add(datum.get(classifier))
         classifier_values_count = dict.fromkeys(classifier_values_set, 0)   #from the set of classifier values, create a dictionary for counting them
-        information_gain=0.0
         for datum in self.data:
-            classifier_values_count[classifier]+=1
+            classifier_values_count[datum.get(classifier)]+=1
+        print classifier_values_count
         for key in classifier_values_count.keys():
-            information_gain-=(float(float(classification_values_count.get(key))/len(self.data)))*math.log(float(float(classification_values_count.get(key))/len(self.data)))
+            temp_information_gain=0.0
+            temp_information_gain_2=0.0
+            temp_information_gain=float((float(classifier_values_count.get(key)))/(float(len(self.data))))
+            #print temp_information_gain
+            temp_information_gain_2=-math.log(temp_information_gain,2)
+            #print "temp_information_gain_2"
+            #print temp_information_gain_2
+            temp_information_gain=temp_information_gain*temp_information_gain_2
+            #print "temp_information_gain"
+            #print temp_information_gain
+            information_gain+=temp_information_gain
         return information_gain
 
     def choose_comparator(self, classifier): #{{{
@@ -176,11 +187,18 @@ class Tree(object):
             return
     # }}}
 
-my_file='altitude.csv'
+#my_file='altitude.csv'
+my_file='photos.csv'
 classifier='Class'
 root = Tree()
 root.file_read(my_file)
-root.choose_comparator(classifier)
+#root.choose_comparator(classifier)
 root.write()
+temp_classifier='Family'
+information_gain=root.entropy(temp_classifier)
+print (information_gain)
+#temp_classifier='Cartoon'
+#information_gain-=root.entropy(temp_classifier)
+#print (information_gain)
 #root.file_write("output.dict")
 
