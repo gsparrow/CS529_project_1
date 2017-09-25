@@ -110,12 +110,12 @@ class Tree(object):
                 entropy_dictionary[attribute]=self.information_gain(classifier, attribute)
             #print entropy_dictionary
             max_information_gain=max(entropy_dictionary.values())
-            print max_information_gain
+            #print max_information_gain
             for pair in entropy_dictionary.items():
                 if (pair[1] == max_information_gain):
                     pair_to_return=pair
-            print pair_to_return
-            return pair_to_return
+            #print pair_to_return
+            return pair_to_return[0] #returns just the attribute
         else:
             print "I have no data to compute the max information gain from"
             exit(1)
@@ -196,11 +196,11 @@ class Tree(object):
                 self.comparator=int(self.data[0].get(classifier))
                 return
             else:
-                #self.comparator=self.compute_max_information_gain(classifier) #this will compute the information gain and use it as its comparator
+                self.comparator=self.compute_max_information_gain(classifier) #this will compute the information gain and use its attribute as its comparator
                 #print str(self.compute_max_information_gain(classifier))
-                temp_headers=self.data[0].keys()
-                temp_headers.remove(classifier)
-                self.comparator=random.choice(temp_headers) #this is what chooses the comparator of the node, in this case psuedorandomness
+                #temp_headers=self.data[0].keys()
+                #temp_headers.remove(classifier)
+                #self.comparator=random.choice(temp_headers) #this is what chooses the comparator of the node, in this case psuedorandomness
                 self.left = Tree()
                 self.right = Tree()
                 while (self.data):
@@ -216,15 +216,15 @@ class Tree(object):
             return
     # }}}
 
-#my_file='altitude.csv'
-my_file='photos.csv'
+my_file='altitude.csv'
+#my_file='photos.csv'
 classifier='Class'
 root = Tree()
 root.file_read(my_file)
-#root.choose_comparator(classifier)
+root.choose_comparator(classifier)
 root.write()
-temp_classifier='Family'
-print root.compute_max_information_gain(temp_classifier)
+#temp_classifier='Family'
+#print root.compute_max_information_gain(temp_classifier)
 #information_gain=root.information_gain(temp_classifier, 'Cartoon')
 #print (information_gain)
 #temp_classifier='Cartoon'
