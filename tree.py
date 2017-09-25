@@ -99,38 +99,10 @@ class Tree(object):
         self.data.append(datum)
 
     def compute_max_information_gain(self, classifier): #{{{
-        information_gains=[]
-        temp_values=set()
-        temp_pairs={}
-        if (self.data):
-            for key in self.data[0].keys(): # for each of the different keys
-                temp_pairs={}
-                for iterator in range(0, len(self.data)): #for each of the datum in data
-                    if (self.data[iterator].get(key)): #if the datum exists
-                        if (temp_pairs.get(self.data[iterator].get(key))): #if the value exists as a key-value pair in temp_pairs
-                            temp_pairs[self.data[iterator].get(key)]+=1.0
-                        else:
-                            temp_pairs[self.data[iterator].get(key)]=1.0 #if the value DNE as a key-value pair in temp_pairs
-                print str(temp_pairs)   #verbose
-                for iterator in range(0, len(temp_pairs.keys())-1): #now that we have a list of the totals of values
-                    if (iterator==0):
-                        information_gains.append(-math.log(float    #summation for entropy, -log(value_subset/set)
-                                                            (float(temp_pairs.get(temp_pairs.keys()[iterator])))
-                                                            /float(len(self.data))))
-                    else:
-                        information_gains[iterator]-=math.log(float
-                                                            (float(temp_pairs.get(temp_pairs.keys()[iterator])))
-                                                            /float(len(self.data)))
-            print str(information_gains)    #verbose
-            for iterator in range(0, len(information_gains)):   #return where the key is for the max information gain
-                if (information_gains[iterator] == (float(max(information_gains)))):
-                    return iterator
-        else:
-            print "There was an error and this node has no data"
-            exit()
+        # To be implented
     # }}}
                     
-    def entropy(self, classifier): #evaluates the base information gain, from which other values are subtracted
+    def base_entropy(self, classifier): #evaluates the base information gain, from which other values are subtracted #{{{
         classifier_values_count = {} #counts of the classification values
         classifier_values_set = set()
         information_gain=0.0
@@ -139,7 +111,7 @@ class Tree(object):
         classifier_values_count = dict.fromkeys(classifier_values_set, 0)   #from the set of classifier values, create a dictionary for counting them
         for datum in self.data:
             classifier_values_count[datum.get(classifier)]+=1
-        print classifier_values_count
+        #print classifier_values_count
         for key in classifier_values_count.keys():
             temp_information_gain=0.0
             temp_information_gain_2=0.0
@@ -153,6 +125,44 @@ class Tree(object):
             #print temp_information_gain
             information_gain+=temp_information_gain
         return information_gain
+    # }}}
+
+    def entropy(self, classifier, attribute): #calculates the entropy of a particular attribute #{{{
+        attribute_values_count = {} #counts of the classification values
+        attribute_values_set = set()
+        forest = {}
+        entropy_summation=0.0
+        for datum in self.data:                                             #from the values of the classifier, create a set
+            attribute_values_set.add(datum.get(attribute))
+        forest = dict.fromkeys(attribute_values_set)   #from the set of classifier values, create a dictionary for counting them
+                                                       # DO not use the default value with objects, as it just links all things
+                                                       #  in the dictionary to the same object
+        attribute_values_count = dict.fromkeys(attribute_values_set, 0)   #from the set of classifier values, create a dictionary for counting them
+        for tree in forest.keys():
+            forest[tree]=Tree()
+        #print forest.keys()
+        #print forest.values()
+        for datum in self.data:
+            #print datum.get(attribute)
+            forest[datum.get(attribute)].add_data(datum)
+            attribute_values_count[datum.get(attribute)]+=1
+        for tree in forest.keys():
+            #forest[tree].write()
+            #print forest[tree]
+            #print "tree subset base entropy"
+            #print forest[tree].base_entropy(classifier)
+            entropy_summation+=(float(float(attribute_values_count.get(tree))/(float(len(self.data)))))*forest[tree].base_entropy(classifier)
+        #print "entropy_summation"
+        #print entropy_summation
+        return entropy_summation
+        # }}}
+
+    def information_gain(self, classifier, attribute):
+        #print "base_entropy"
+        #print self.base_entropy(classifier)
+        #print "summation"
+        #print self.entropy(classifier, attribute)
+        return (self.base_entropy(classifier) - self.entropy(classifier, attribute))
 
     def choose_comparator(self, classifier): #{{{
         same=True
@@ -195,7 +205,7 @@ root.file_read(my_file)
 #root.choose_comparator(classifier)
 root.write()
 temp_classifier='Family'
-information_gain=root.entropy(temp_classifier)
+information_gain=root.information_gain(temp_classifier, 'Cartoon')
 print (information_gain)
 #temp_classifier='Cartoon'
 #information_gain-=root.entropy(temp_classifier)
