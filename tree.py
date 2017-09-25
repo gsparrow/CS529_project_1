@@ -99,7 +99,26 @@ class Tree(object):
         self.data.append(datum)
 
     def compute_max_information_gain(self, classifier): #{{{
-        # To be implented
+        entropy_dictionary = {}
+        max_information_gain = 0.0
+        if (self.data):
+            temp_attribute_list =self.data[0].keys()
+            temp_attribute_list.remove(classifier)
+            entropy_dictionary = dict.fromkeys(temp_attribute_list, 0.0)
+            #print entropy_dictionary
+            for attribute in entropy_dictionary.keys():
+                entropy_dictionary[attribute]=self.information_gain(classifier, attribute)
+            #print entropy_dictionary
+            max_information_gain=max(entropy_dictionary.values())
+            print max_information_gain
+            for pair in entropy_dictionary.items():
+                if (pair[1] == max_information_gain):
+                    pair_to_return=pair
+            print pair_to_return
+            return pair_to_return
+        else:
+            print "I have no data to compute the max information gain from"
+            exit(1)
     # }}}
                     
     def base_entropy(self, classifier): #evaluates the base information gain, from which other values are subtracted #{{{
@@ -205,8 +224,9 @@ root.file_read(my_file)
 #root.choose_comparator(classifier)
 root.write()
 temp_classifier='Family'
-information_gain=root.information_gain(temp_classifier, 'Cartoon')
-print (information_gain)
+print root.compute_max_information_gain(temp_classifier)
+#information_gain=root.information_gain(temp_classifier, 'Cartoon')
+#print (information_gain)
 #temp_classifier='Cartoon'
 #information_gain-=root.entropy(temp_classifier)
 #print (information_gain)
