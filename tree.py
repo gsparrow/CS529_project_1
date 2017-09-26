@@ -1,6 +1,6 @@
 #!/usr/bin/python3
-# vim: expandtab softtabstop=4 shiftwidth=4 foldmethod=marker#
-#--------------------------------------------------------------------------------------------------
+# vim: expandtab softtabstop=4 shiftwidth=4 foldmethod=marker
+# --------------------------------------------------------------------------------------------------
 # * @file:      tree.py
 # * @authors:    George Sparrow and Jenniffer Estrada  
 # * @date:      
@@ -10,7 +10,7 @@
 # * Course:         Machine Learning
 # * Assignment:     Project 1
 # * Description:    Contains the implementation of the Tree class
-# -------------------------------------------------------------------------------------------------*/
+# --------------------------------------------------------------------------------------------------
 
 import sys
 import csv
@@ -330,7 +330,6 @@ class Tree(object):
             print temp_gini_index
         #return gini_summation
         # }}}
-
 
 def main(): # Main function call #{{{
 
