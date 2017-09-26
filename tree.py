@@ -1,5 +1,17 @@
 #!/usr/bin/python3
-# vim: expandtab softtabstop=4 shiftwidth=4 foldmethod=marker
+# vim: expandtab softtabstop=4 shiftwidth=4 foldmethod=marker#
+#--------------------------------------------------------------------------------------------------
+# * @file:      tree.py
+# * @authors:    George Sparrow and Jenniffer Estrada  
+# * @date:      
+# *  Created:       Sunday, September 17, 2017
+# *  Last Update:   Tuesday, September 26, 2017
+# * Language:       Python
+# * Course:         Machine Learning
+# * Assignment:     Project 1
+# * Description:    Contains the implementation of the Tree class
+# -------------------------------------------------------------------------------------------------*/
+
 import sys
 import csv
 import random
@@ -320,7 +332,7 @@ class Tree(object):
         # }}}
 
 
-def main():
+def main(): # Main function call #{{{
 
     #my_file='altitude.csv'
     #chi_squared_file='chisquared.csv'
@@ -364,3 +376,5 @@ def main():
     print root.attribute_gini_index(temp_classifier, attr)    
 
 if __name__== "__main__": main()
+
+    #}}}
