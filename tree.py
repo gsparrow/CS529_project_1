@@ -322,7 +322,7 @@ class Tree(object):
 
 def main():
 
-#my_file='altitude.csv'
+    #my_file='altitude.csv'
     #chi_squared_file='chisquared.csv'
     #my_file='photos.csv'
     #classifier='Class'
