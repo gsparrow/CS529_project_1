@@ -1,4 +1,4 @@
-# CS529 Machine learning: Project 1: Decision Trees
+# CS529 Machine Learning: Project 1: Decision Trees
 
 ### Authors: George Sparrow and Jenniffer Estrada
 ### Professor: Dr. Trilce Estrada-Piedra
