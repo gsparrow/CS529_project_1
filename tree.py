@@ -273,27 +273,94 @@ class Tree(object):
                 self.right.choose_comparator(classifier)
         else: #an error has occured, there is no data in this leaf
             return
+# }}}
+
+    def base_gini_index(self, classifier): #evaluates the system gini index, from which other values are subtracted #{{{
+        classifier_values_count = {} #counts of the classification values
+        classifier_values_set = set()
+        system_gini_value=1
+        for datum in self.data:                                             #from the values of the classifier, create a set
+            classifier_values_set.add(datum.get(classifier))
+        classifier_values_count = dict.fromkeys(classifier_values_set, 0)   #from the set of classifier values, create a dictionary for counting them
+        for datum in self.data:
+            classifier_values_count[datum.get(classifier)]+=1
+        for key in classifier_values_count.keys():
+            temp_gini_value=0.0
+            temp_gini_value=float((float(classifier_values_count.get(key)))/(float(len(self.data))))
+            system_gini_value *= temp_gini_value
+        return system_gini_value
     # }}}
 
-my_file='altitude.csv'
-chi_squared_file='chisquared.csv'
-#my_file='photos.csv'
-classifier='Class'
-PROBABILITY='0.050'
-root = Tree()
-root.file_read(my_file)
-root.chi_squared_read(chi_squared_file)
-#print root.chi_squared_headers
-#print root.chi_squared_data
-#root.choose_comparator(classifier)
-#root.write()
-print root.chi_squared(classifier, PROBABILITY)
-#temp_classifier='Family'
-#print root.compute_max_information_gain(temp_classifier)
-#information_gain=root.information_gain(temp_classifier, 'Cartoon')
-#print (information_gain)
-#temp_classifier='Cartoon'
-#information_gain-=root.entropy(temp_classifier)
-#print (information_gain)
-#root.file_write("output.dict")
+    def attribute_gini_index(self, classifier, attribute): #calculates the gini index value for a particular attribute #{{{ 
+        attribute_values_count = {} #counts of the classification values
+        attribute_values_set = set()
+        forest = {}
+        gini_summation=0.0
+        for datum in self.data:                                             #from the values of the classifier, create a set
+            attribute_values_set.add(datum.get(attribute))
+        print "Attribute value set"
+        print attribute_values_set
+        attribute_values_count = dict.fromkeys(attribute_values_set, 0)   #from the set of classifier values, create a dictionary for counting them
+        for datum in self.data:
+            attribute_values_count[datum.get(attribute)]+=1
+        print "Attribute value counts"
+        print attribute_values_count
+        
+        print "length of data" 
+        print float(len(self.data))
 
+        for key in attribute_values_count.keys():
+            print "key value"
+            print key
+            temp_gini_index=0.0
+            temp_gini_index=float((float(attribute_values_count.get(key)))/(float(len(self.data))))
+            print "Gini Index"
+            print temp_gini_index
+        #return gini_summation
+        # }}}
+
+
+def main():
+
+#my_file='altitude.csv'
+    #chi_squared_file='chisquared.csv'
+    #my_file='photos.csv'
+    #classifier='Class'
+    #PROBABILITY='0.050'
+    #root = Tree()
+    #root.file_read(my_file)
+    #root.chi_squared_read(chi_squared_file)
+    #print root.chi_squared_headers
+    #print root.chi_squared_data
+    #root.choose_comparator(classifier)
+    #root.write()
+    #print root.chi_squared(classifier, PROBABILITY)
+    #temp_classifier='Family'
+    #print root.compute_max_information_gain(temp_classifier)
+    #information_gain=root.information_gain(temp_classifier, 'Cartoon')
+    #print (information_gain)
+    #temp_classifier='Cartoon'
+    #information_gain-=root.entropy(temp_classifier)
+    #print (information_gain)
+    #root.file_write("output.dict")
+    #my_file='altitude.csv'
+    my_file='photos.csv'
+    #classifier='Family'
+    root = Tree()
+    root.file_read(my_file)
+    #root.choose_comparator(classifier)
+    #root.write()
+    temp_classifier='Family'
+    #print root.compute_max_information_gain(temp_classifier)
+    #information_gain=root.information_gain(temp_classifier, 'Cartoon')
+    #print (information_gain)
+    #temp_classifier='Cartoon'
+    #information_gain-=root.entropy(temp_classifier)
+    #print (information_gain)
+    #root.file_write("output.dict")
+    print '========================================'
+    #print root.base_gini_value(temp_classifier)
+    attr = 'Cartoon'
+    print root.attribute_gini_index(temp_classifier, attr)    
+
+if __name__== "__main__": main()
