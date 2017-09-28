@@ -147,7 +147,7 @@ class Tree(object):
             print "I have no data to compute the max information gain from"
             exit(1)
     # }}}
-                    
+
     def base_entropy(self, classifier): #evaluates the base information gain, from which other values are subtracted #{{{
         classifier_values_count = {} #counts of the classification values
         classifier_values_set = set()
@@ -287,19 +287,21 @@ class Tree(object):
             return
 # }}}
 
-    def base_gini_index(self, classifier): #evaluates the system gini index, from which other values are subtracted #{{{
-        classifier_values_count = {} #counts of the classification values
+    def base_gini_index(self, classifier): # Evaluates the system gini index #{{{
+        classifier_values_count = {} # Counts of the classification values
         classifier_values_set = set()
-        system_gini_value=1
-        for datum in self.data:                                             #from the values of the classifier, create a set
+        system_gini_value=0.0
+        for datum in self.data:                                             # From the values of the classifier, create a set
             classifier_values_set.add(datum.get(classifier))
-        classifier_values_count = dict.fromkeys(classifier_values_set, 0)   #from the set of classifier values, create a dictionary for counting them
+        classifier_values_count = dict.fromkeys(classifier_values_set, 0)   # From the set of classifier values, create a dictionary for counting them
         for datum in self.data:
             classifier_values_count[datum.get(classifier)]+=1
         for key in classifier_values_count.keys():
             temp_gini_value=0.0
-            temp_gini_value=float((float(classifier_values_count.get(key)))/(float(len(self.data))))
-            system_gini_value *= temp_gini_value
+            temp_system_value = 0.0
+            temp_system_value=float((float(classifier_values_count.get(key)))/(float(len(self.data))))
+            temp_gini_value += float(float(temp_system_value) ** float(2.0))
+        system_gini_value =float( float(1.0) - float(temp_gini_value))
         return system_gini_value
     # }}}
 
@@ -370,9 +372,9 @@ def main(): # Main function call #{{{
     #print (information_gain)
     #root.file_write("output.dict")
     print '========================================'
-    #print root.base_gini_value(temp_classifier)
+    print root.base_gini_index(temp_classifier)
     attr = 'Cartoon'
-    print root.attribute_gini_index(temp_classifier, attr)    
+  #  print root.attribute_gini_index(temp_classifier, attr)    
 
 if __name__== "__main__": main()
 
