@@ -290,18 +290,18 @@ class Tree(object):
     def base_gini_index(self, classifier): # Evaluates the system gini index #{{{
         classifier_values_count = {} # Counts of the classification values
         classifier_values_set = set()
-        system_gini_value=0.0
+        system_gini_value = 0.0
         for datum in self.data:                                             # From the values of the classifier, create a set
             classifier_values_set.add(datum.get(classifier))
         classifier_values_count = dict.fromkeys(classifier_values_set, 0)   # From the set of classifier values, create a dictionary for counting them
         for datum in self.data:
-            classifier_values_count[datum.get(classifier)]+=1
+            classifier_values_count[datum.get(classifier)] += 1
         for key in classifier_values_count.keys():
-            temp_gini_value=0.0
+            temp_gini_value = 0.0
             temp_system_value = 0.0
-            temp_system_value=float((float(classifier_values_count.get(key)))/(float(len(self.data))))
+            temp_system_value = float((float(classifier_values_count.get(key)))/(float(len(self.data))))
             temp_gini_value += float(float(temp_system_value) ** float(2.0))
-        system_gini_value =float( float(1.0) - float(temp_gini_value))
+        system_gini_value = float(float(1.0) - float(temp_gini_value))
         return system_gini_value
     # }}}
 
@@ -309,25 +309,24 @@ class Tree(object):
         attribute_values_count = {} #counts of the classification values
         attribute_values_set = set()
         forest = {}
-        gini_summation=0.0
+        gini_summation = 0.0
         for datum in self.data:                                             #from the values of the classifier, create a set
             attribute_values_set.add(datum.get(attribute))
         print "Attribute value set"
         print attribute_values_set
         attribute_values_count = dict.fromkeys(attribute_values_set, 0)   #from the set of classifier values, create a dictionary for counting them
         for datum in self.data:
-            attribute_values_count[datum.get(attribute)]+=1
+            attribute_values_count[datum.get(attribute)] += 1
         print "Attribute value counts"
         print attribute_values_count
-        
-        print "length of data" 
+        print "length of data"
         print float(len(self.data))
 
         for key in attribute_values_count.keys():
             print "key value"
             print key
-            temp_gini_index=0.0
-            temp_gini_index=float((float(attribute_values_count.get(key)))/(float(len(self.data))))
+            temp_gini_index = 0.0
+            temp_gini_index = float((float(attribute_values_count.get(key)))/(float(len(self.data))))
             print "Gini Index"
             print temp_gini_index
         #return gini_summation
