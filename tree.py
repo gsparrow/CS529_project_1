@@ -19,36 +19,40 @@ import pdb
 import math
 
 class Tree(object):
+    """ Docstring Placeholder """
     def __init__(self):
         self.left = None
         self.right = None
-        self.data=[]
-        self.headers=[]
-        self.chi_squared_headers=[]
-        self.chi_squared_data=[]
-        self.comparator=[]
+        self.data = []
+        self.headers = []
+        self.chi_squared_headers = []
+        self.chi_squared_data = []
+        self.comparator = []
 
     def file_read(self, filename): #{{{
+        """ Docstring Placeholder """
         with open(filename) as csvfile:
             reader = csv.DictReader(csvfile)
-            self.headers=reader.fieldnames
+            self.headers = reader.fieldnames
             for row in reader:
                 self.data.append(row)
     # }}}
 
     def chi_squared_read(self, filename): #{{{
+        """ Docstring Placeholder """
         with open(filename) as csvfile:
             reader = csv.DictReader(csvfile)
-            self.chi_squared_headers=reader.fieldnames
+            self.chi_squared_headers = reader.fieldnames
             for row in reader:
                 self.chi_squared_data.append(row)
         for row in self.chi_squared_data:
             for column in row:
-                row[column]=float(row.get(column))
+                row[column] = float(row.get(column))
     # }}}
 
     # Write File Output functions {{{
     def file_write_inorder(self, filename):
+        """ Docstring Placeholder """
         if (self.left):
             self.left.write()
         with open(filename, 'a') as csvfile:
@@ -56,11 +60,12 @@ class Tree(object):
             writer.writeheader()
             for datum in self.data:
                 writer.writerow(datum)
-            csvfile.write("\n" )
+            csvfile.write( "\n" )
         if (self.right):
             self.right.write()
 
     def file_write_preorder(self, filename):
+        """ Docstring Placeholder """
         with open(filename, 'a') as csvfile:
             writer = csv.DictWriter(csvfile, fieldnames=self.headers)
             writer.writeheader()
@@ -73,6 +78,7 @@ class Tree(object):
             self.right.write()
 
     def file_write_postorder(self, filename):
+        """ Docstring Placeholder """
         if (self.left):
             self.left.write()
         if (self.right):
@@ -85,11 +91,13 @@ class Tree(object):
             csvfile.write("\n" )
 
     def file_write(self, filename):
+        """ Docstring Placeholder """
         self.file_write_inorder(filename)
     # }}}
 
     # Write stdout Output functions {{{
     def write_inorder(self):
+        """ Docstring Placeholder """
         if (self.left):
             self.left.write()
         sys.stdout.write(str(self.comparator) + "\n")
@@ -100,6 +108,7 @@ class Tree(object):
             self.right.write()
 
     def write_preorder(self):
+        """ Docstring Placeholder """
         for datum in self.data:
             sys.stdout.write(str(datum) + "\n")
         print
@@ -109,6 +118,7 @@ class Tree(object):
             self.right.write()
 
     def write_postorder(self):
+        """ Docstring Placeholder """
         if (self.left):
             self.left.write()
         if (self.right):
@@ -118,29 +128,32 @@ class Tree(object):
         print
 
     def write(self):
+        """ Docstring Placeholder """
         self.write_inorder()
     # }}}
 
     def add_data(self, datum): #{{{
+        """ Docstring Placeholder """
         self.data.append(datum)
     # }}}
 
     def compute_max_information_gain(self, classifier): #{{{
+        """ Docstring Placeholder """
         entropy_dictionary = {}
         max_information_gain = 0.0
         if (self.data):
-            temp_attribute_list =self.data[0].keys()
+            temp_attribute_list = self.data[0].keys()
             temp_attribute_list.remove(classifier)
             entropy_dictionary = dict.fromkeys(temp_attribute_list, 0.0)
             #print entropy_dictionary
             for attribute in entropy_dictionary.keys():
                 entropy_dictionary[attribute]=self.information_gain(classifier, attribute)
             #print entropy_dictionary
-            max_information_gain=max(entropy_dictionary.values())
+            max_information_gain = max(entropy_dictionary.values())
             #print max_information_gain
             for pair in entropy_dictionary.items():
                 if (pair[1] == max_information_gain):
-                    pair_to_return=pair
+                    pair_to_return = pair
             #print pair_to_return
             return pair_to_return[0] #returns just the attribute
         else:
@@ -149,6 +162,7 @@ class Tree(object):
     # }}}
 
     def base_entropy(self, classifier): #evaluates the base information gain, from which other values are subtracted #{{{
+        """ Docstring Placeholder """
         classifier_values_count = {} #counts of the classification values
         classifier_values_set = set()
         information_gain=0.0
@@ -156,28 +170,29 @@ class Tree(object):
             classifier_values_set.add(datum.get(classifier))
         classifier_values_count = dict.fromkeys(classifier_values_set, 0)   #from the set of classifier values, create a dictionary for counting them
         for datum in self.data:
-            classifier_values_count[datum.get(classifier)]+=1
+            classifier_values_count[datum.get(classifier)] += 1
         #print classifier_values_count
         for key in classifier_values_count.keys():
-            temp_information_gain=0.0
-            temp_information_gain_2=0.0
-            temp_information_gain=float((float(classifier_values_count.get(key)))/(float(len(self.data))))
+            temp_information_gain = 0.0
+            temp_information_gain_2 = 0.0
+            temp_information_gain = float((float(classifier_values_count.get(key)))/(float(len(self.data))))
             #print temp_information_gain
-            temp_information_gain_2=-math.log(temp_information_gain,2)
+            temp_information_gain_2 = -math.log(temp_information_gain,2)
             #print "temp_information_gain_2"
             #print temp_information_gain_2
-            temp_information_gain=temp_information_gain*temp_information_gain_2
+            temp_information_gain = temp_information_gain*temp_information_gain_2
             #print "temp_information_gain"
             #print temp_information_gain
-            information_gain+=temp_information_gain
+            information_gain += temp_information_gain
         return information_gain
     # }}}
 
     def entropy(self, classifier, attribute): #calculates the entropy of a particular attribute #{{{
+        """ Docstring Placeholder """
         attribute_values_count = {} #counts of the classification values
         attribute_values_set = set()
         forest = {}
-        entropy_summation=0.0
+        entropy_summation = 0.0
         for datum in self.data:                                             #from the values of the classifier, create a set
             attribute_values_set.add(datum.get(attribute))
         forest = dict.fromkeys(attribute_values_set)   #from the set of classifier values, create a dictionary for counting them
@@ -185,33 +200,35 @@ class Tree(object):
                                                        #  in the dictionary to the same object
         attribute_values_count = dict.fromkeys(attribute_values_set, 0)   #from the set of classifier values, create a dictionary for counting them
         for tree in forest.keys():
-            forest[tree]=Tree()
+            forest[tree] = Tree()
         #print forest.keys()
         #print forest.values()
         for datum in self.data:
             #print datum.get(attribute)
             forest[datum.get(attribute)].add_data(datum)
-            attribute_values_count[datum.get(attribute)]+=1
+            attribute_values_count[datum.get(attribute)] += 1
         for tree in forest.keys():
             #forest[tree].write()
             #print forest[tree]
             #print "tree subset base entropy"
             #print forest[tree].base_entropy(classifier)
-            entropy_summation+=(float(float(attribute_values_count.get(tree))/(float(len(self.data)))))*forest[tree].base_entropy(classifier)
+            entropy_summation += (float(float(attribute_values_count.get(tree))/(float(len(self.data)))))*forest[tree].base_entropy(classifier)
         #print "entropy_summation"
         #print entropy_summation
         return entropy_summation
-        # }}}
+        #}}}
 
-    def information_gain(self, classifier, attribute): #{{{
+    def information_gain(self, classifier, attribute): # #{{{
+        """ Docstring Placeholder """
         #print "base_entropy"
         #print self.base_entropy(classifier)
         #print "summation"
         #print self.entropy(classifier, attribute)
-        return (self.base_entropy(classifier) - self.entropy(classifier, attribute))
-    # }}}
+        return self.base_entropy(classifier) - self.entropy(classifier, attribute)
+         #}}}
 
     def chi_squared(self, attribute, probability): #{{{
+        """ Docstring Placeholder """
         attribute_values_count = {} #counts of the attribute values
         attribute_values_set = set() #holds both the degrees of freedom, and helps calculate the expected value
         degrees_of_freedom = 0
@@ -224,10 +241,10 @@ class Tree(object):
         attribute_values_count = dict.fromkeys(attribute_values_set, 0)
         #print attribute_values_set
         for datum in self.data:
-            attribute_values_count[datum.get(attribute)]+=1 
-        degrees_of_freedom=((len(attribute_values_set))-1)
+            attribute_values_count[datum.get(attribute)] += 1
+        degrees_of_freedom = ((len(attribute_values_set))-1)
         #print degrees_of_freedom
-        expected_value=float(float(len(self.data))/float(len(attribute_values_set)))
+        expected_value = float(float(len(self.data))/float(len(attribute_values_set)))
         #print expected_value
         for key in attribute_values_count.keys():
             temp_value = float(expected_value) - float(attribute_values_count.get(key))
@@ -244,7 +261,7 @@ class Tree(object):
             #print "Temp value"
             #print temp_value
             chi_squared_value += temp_value
-        degrees_fo_freedom=20
+        degrees_fo_freedom = 20
         critical_value = self.chi_squared_data[(degrees_of_freedom-1)].get(probability)
         print critical_value
         print chi_squared_value
@@ -255,19 +272,20 @@ class Tree(object):
     #}}}
 
     def choose_comparator(self, classifier): #{{{
-        same=True
-        temp_headers=[]
+        """ Docstring Placeholder """
+        same = True
+        temp_headers = []
         classifier_values_set = set()
         for datum in self.data:
             classifier_values_set.add(datum.get(classifier))
         if (self.data):
             for datum in self.data:
                 classifier_values_set.add(datum.get(classifier))
-            if (len(classifier_values_set) ==1):
-                self.comparator=int(self.data[0].get(classifier))
+            if (len(classifier_values_set) == 1):
+                self.comparator = int(self.data[0].get(classifier))
                 return
             else:
-                self.comparator=self.compute_max_information_gain(classifier) #this will compute the information gain and use its attribute as its comparator
+                self.comparator = self.compute_max_information_gain(classifier) #this will compute the information gain and use its attribute as its comparator
                 #print str(self.compute_max_information_gain(classifier))
                 #temp_headers=self.data[0].keys()
                 #temp_headers.remove(classifier)
@@ -288,6 +306,7 @@ class Tree(object):
 # }}}
 
     def base_gini_index(self, classifier): # Evaluates the system gini index #{{{
+        """ Docstring Placeholder """
         classifier_values_count = {} # Counts of the classification values
         classifier_values_set = set()
         system_gini_value = 0.0
@@ -305,16 +324,17 @@ class Tree(object):
         return system_gini_value
     # }}}
 
-    def attribute_gini_index(self, classifier, attribute): #calculates the gini index value for a particular attribute #{{{ 
-        attribute_values_count = {} #counts of the classification values
+    def attribute_gini_index(self, classifier, attribute): # Calculates the gini index value for a particular attribute #{{{
+        """ Docstring Placeholder """
+        attribute_values_count = {} # Counts of the classification values
         attribute_values_set = set()
         forest = {}
         gini_summation = 0.0
-        for datum in self.data:                                             #from the values of the classifier, create a set
+        for datum in self.data:                                             # From the values of the classifier, create a set
             attribute_values_set.add(datum.get(attribute))
         print "Attribute value set"
         print attribute_values_set
-        attribute_values_count = dict.fromkeys(attribute_values_set, 0)   #from the set of classifier values, create a dictionary for counting them
+        attribute_values_count = dict.fromkeys(attribute_values_set, 0)   # From the set of classifier values, create a dictionary for counting them
         for datum in self.data:
             attribute_values_count[datum.get(attribute)] += 1
         print "Attribute value counts"
@@ -333,7 +353,7 @@ class Tree(object):
         # }}}
 
 def main(): # Main function call #{{{
-
+    """ Main Function call for testing Tree class"""
     #my_file='altitude.csv'
     #chi_squared_file='chisquared.csv'
     #my_file='photos.csv'
@@ -356,13 +376,13 @@ def main(): # Main function call #{{{
     #print (information_gain)
     #root.file_write("output.dict")
     #my_file='altitude.csv'
-    my_file='photos.csv'
+    my_file = 'photos.csv'
     #classifier='Family'
     root = Tree()
     root.file_read(my_file)
     #root.choose_comparator(classifier)
     #root.write()
-    temp_classifier='Family'
+    temp_classifier = 'Family'
     #print root.compute_max_information_gain(temp_classifier)
     #information_gain=root.information_gain(temp_classifier, 'Cartoon')
     #print (information_gain)
@@ -371,10 +391,11 @@ def main(): # Main function call #{{{
     #print (information_gain)
     #root.file_write("output.dict")
     print '========================================'
-    print root.base_gini_index(temp_classifier)
+    #print root.base_gini_index(temp_classifier)
     attr = 'Cartoon'
-  #  print root.attribute_gini_index(temp_classifier, attr)    
+    print root.attribute_gini_index(temp_classifier, attr)
 
-if __name__== "__main__": main()
+if __name__ == "__main__":
+    main()
 
     #}}}
