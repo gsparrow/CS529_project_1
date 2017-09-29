@@ -328,33 +328,41 @@ class Tree(object):
         """ Docstring Placeholder """
         attribute_values_count = {} # Counts of the classification values
         attribute_values_set = set()
+        attr_class_values_count = {} # Counts of the class values
+        attr_class_values_set = set()
         forest = {}
         gini_summation = 0.0
         for datum in self.data:                                             # From the values of the classifier, create a set
             attribute_values_set.add(datum.get(attribute))
+            attr_class_values_set.add(datum.get(classifier))
         print "Attribute value set"
         print attribute_values_set
+        print "class Attribute value set"
+        print attr_class_values_set
+
         attribute_values_count = dict.fromkeys(attribute_values_set, 0)   # From the set of classifier values, create a dictionary for counting them
+        attr_class_values_count = dict.fromkeys(attr_class_values_set, 0)   # From the set of classifier values, create a dictionary for counting them
         for datum in self.data:
             attribute_values_count[datum.get(attribute)] += 1
+            attr_class_values_count[datum.get(classifier)] += 1
         print "Attribute value counts"
         print attribute_values_count
+        print "class Attribute value counts"
+        print attr_class_values_count
         print "length of data"
         print float(len(self.data))
-
+        temp_gini_index = 0.0
         for key in attribute_values_count.keys():
-            print "key value"
-            print key
-            temp_gini_index = 0.0
-            temp_gini_index = float((float(attribute_values_count.get(key)))/(float(len(self.data))))
-            print "Gini Index"
-            print temp_gini_index
-        #return gini_summation
+            temp_gini_index += float(((float(attr_class_values_count.get(key)))/(float(len(self.data)))))**2.0
+            gini_summation = temp_gini_index
+        gini_index = 1-gini_summation
+        print gini_index
+        return gini_index
         # }}}
 
 def main(): # Main function call #{{{
     """ Main Function call for testing Tree class"""
-    #my_file='altitude.csv'
+    my_file='altitude.csv'
     #chi_squared_file='chisquared.csv'
     #my_file='photos.csv'
     #classifier='Class'
@@ -376,24 +384,26 @@ def main(): # Main function call #{{{
     #print (information_gain)
     #root.file_write("output.dict")
     #my_file='altitude.csv'
-    my_file = 'photos.csv'
+    #my_file = 'photos.csv'
     #classifier='Family'
     root = Tree()
     root.file_read(my_file)
     #root.choose_comparator(classifier)
     #root.write()
-    temp_classifier = 'Family'
-    #print root.compute_max_information_gain(temp_classifier)
-    #information_gain=root.information_gain(temp_classifier, 'Cartoon')
+    #temp_classifier = 'Family'
+    class_label = 'Class'
+    attribute = 'Altitude'
+    #print root.compute_max_information_gain(classifier)
+    #print information_gain=root.information_gain(classifier, attribute)
     #print (information_gain)
     #temp_classifier='Cartoon'
     #information_gain-=root.entropy(temp_classifier)
     #print (information_gain)
     #root.file_write("output.dict")
     print '========================================'
-    #print root.base_gini_index(temp_classifier)
-    attr = 'Cartoon'
-    print root.attribute_gini_index(temp_classifier, attr)
+    print root.base_gini_index(class_label)
+    print '========================================'
+    print root.attribute_gini_index(class_label, attribute)
 
 if __name__ == "__main__":
     main()
