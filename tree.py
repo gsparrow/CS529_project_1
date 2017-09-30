@@ -360,6 +360,30 @@ class Tree(object):
         return gini_index
         # }}}
 
+    def predict(self, classifier, datum): #Predicts the classifier of a datum {{{
+        if (self.left):
+            if (int(datum.get(self.comparator)) == 1):
+                return self.left.predict(datum)
+            else:
+                return self.right.predict(datum)
+        else:
+            classifier_values_count = {} #counts of the classification values
+            classifier_values_set = set()
+            data_value =0
+            for datum in self.data:                                             #from the values of the classifier, create a set
+                classifier_values_set.add(datum.get(classifier))
+            classifier_values_count = dict.fromkeys(classifier_values_set, 0)   #from the set of classifier values, create a dictionary for counting them
+            for datum in self.data:
+                classifier_values_count[datum.get(classifier)] += 1
+            for key in classifier_values_set.keys():
+                if (classifier_values_set.get(key) > data_value):
+                    data_value = classifier_values_set.get(key)
+                    data_attribute = key
+            return data_value
+    # }}}
+                
+        
+
 def main(): # Main function call #{{{
     """ Main Function call for testing Tree class"""
     my_file='altitude.csv'
