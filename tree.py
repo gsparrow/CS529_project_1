@@ -42,22 +42,25 @@ class Tree(object):
             for row in reader:
                 #print row
                 self.data.append(row)
-                #parse_sequence(1)
+                #parse_sequence(reader, 1)
     # }}}
 
-    def parse_sequence(self, forma): # Parses and takes count of all sequence values within a row #{{{ 
+    def parse_sequence(self, reader, forma): # Parses and takes count of all sequence values within a row #{{{ 
         """ Docstring Placeholder """
         if (forma == 1): # DNSR values their own attribute
-            pass
+            # Pick up sequence value and parse it for each occurance of each field
+            reader.fieldnames = "ID", "A","G","T","C","D","N","S","R","Class"
+            self.headers = reader.fieldnames
         elif (forma == 2): # Replacing D=;N=;S=;R=;
-            pass
+            reader.fieldnames = "ID", "A","G","T","C","Class"
+            self.headers = reader.fieldnames
         elif (forma == 3): # Randomly replacing based on possible values per each ambiguous value
-            pass
+            reader.fieldnames = "ID", "A","G","T","C","Class"
+            self.headers = reader.fieldnames
         elif (forma == 4): # Replacing possible values for each ambigious value based on gaussian distribution
-            pass
-        else: # pass through and do nothing
-            pass
-        return 
+            reader.fieldnames = "ID", "A","G","T","C","Class"
+            self.headers = reader.fieldnames
+        return
         #}}}
 
 
