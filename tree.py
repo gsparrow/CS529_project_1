@@ -31,15 +31,35 @@ class Tree(object):
 
     def file_read(self, filename, header): #{{{
         """ Docstring Placeholder """
-        with open(filename) as csvfile:
+        with open(filename) as csvfile: # Contains a header (test datasets we created for validation)
             if (header == 1):
                 reader = csv.DictReader(csvfile)
-            else:
+            else: # Doesn't have a header and using the data on Kaggle
                 reader = csv.DictReader(csvfile, fieldnames=("ID","Sequence","Class"))
+                #reader = csv.DictReader(csvfile, fieldnames=("ID","A","G","T","C","D","N","S","R","Class"))
+                #reader = csv.DictReader(csvfile, fieldnames=("ID","A","G","T","C","Class"))
             self.headers = reader.fieldnames
             for row in reader:
+                #print row
                 self.data.append(row)
+                #parse_sequence(1)
     # }}}
+
+    def parse_sequence(self, forma): # Parses and takes count of all sequence values within a row #{{{ 
+        """ Docstring Placeholder """
+        if (forma == 1): # DNSR values their own attribute
+            pass
+        elif (forma == 2): # Replacing D=;N=;S=;R=;
+            pass
+        elif (forma == 3): # Randomly replacing based on possible values per each ambiguous value
+            pass
+        elif (forma == 4): # Replacing possible values for each ambigious value based on gaussian distribution
+            pass
+        else: # pass through and do nothing
+            pass
+        return 
+        #}}}
+
 
     def chi_squared_read(self, filename): #{{{
         """ Docstring Placeholder """
@@ -356,6 +376,10 @@ class Tree(object):
         print float(len(self.data))
         temp_gini_index = 0.0
         for key in attribute_values_count.keys():
+            print "Key"
+            print key
+            print "counts"
+            print attr_class_values_count.get(key)
             temp_gini_index += float(((float(attr_class_values_count.get(key)))/(float(len(self.data)))))**2.0
             gini_summation = temp_gini_index
         gini_index = 1-gini_summation
@@ -382,16 +406,23 @@ class Tree(object):
                 if (classifier_values_set.get(key) > data_value):
                     data_value = classifier_values_set.get(key)
                     data_attribute = key
-            return data_value
+            return data_attribute
     # }}}
-                
-        
 
 def main(): # Main function call #{{{
-    """ Main Function call for testing Tree class"""
-    #my_file='altitude.csv'
+    """ Main Function call for testing Tree class
+    my_file='altitude.csv'
+    header = 1 # Turn this option on if there is a header in the csv being read!!!!
+    class_label = 'Class'
+    attribute = 'Direction'
+"""
+
+    my_file = 'training.csv'
     header = 0 # Turn this option on if there is a header in the csv being read!!!!
-    my_file='training.csv'
+    class_label = 'Class'
+    attribute = 'Sequence'
+
+    #my_file='training.csv'
     #chi_squared_file='chisquared.csv'
     #my_file='photos.csv'
     #classifier='Class'
@@ -417,11 +448,11 @@ def main(): # Main function call #{{{
     #classifier='Family'
     root = Tree()
     root.file_read(my_file, header)
-    #root.choose_comparator(classifier)
+    #root.choose_comparator(class_label)
     #root.write()
     #temp_classifier = 'Family'
-    class_label = 'Class'
-    attribute = 'Sequence'
+    #class_label = 'Class'
+    #attribute = 'Direction'
     #print root.compute_max_information_gain(classifier)
     #print information_gain=root.information_gain(classifier, attribute)
     #print (information_gain)
@@ -429,12 +460,13 @@ def main(): # Main function call #{{{
     #information_gain-=root.entropy(temp_classifier)
     #print (information_gain)
     #root.file_write("output.dict")
-    print '========================================'
+    #print '========================================'
     print root.base_gini_index(class_label)
     print '========================================'
-    print root.attribute_impurity(class_label, attribute)
+    #print root.attribute_impurity(class_label, attribute)
+    #datum = {'key':'20000', 'value':'GCTGGGCCCTGGGCTTCTACCCTGCGGAGATCACACTGACCTGGCAGCGGGATGGCGAGG'}
+    #print root.predict(class_label, datum)
 
 if __name__ == "__main__":
     main()
 
-    #}}}
