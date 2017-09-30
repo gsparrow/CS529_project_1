@@ -5,7 +5,7 @@
 # * @authors:    George Sparrow and Jenniffer Estrada  
 # * @date:      
 # *  Created:       Sunday, September 17, 2017
-# *  Last Update:   Tuesday, September 26, 2017
+# *  Last Update:   Tuesday, September 28, 2017
 # * Language:       Python
 # * Course:         Machine Learning
 # * Assignment:     Project 1
@@ -29,10 +29,13 @@ class Tree(object):
         self.chi_squared_data = []
         self.comparator = []
 
-    def file_read(self, filename): #{{{
+    def file_read(self, filename, header): #{{{
         """ Docstring Placeholder """
         with open(filename) as csvfile:
-            reader = csv.DictReader(csvfile)
+            if (header == 1):
+                reader = csv.DictReader(csvfile)
+            else:
+                reader = csv.DictReader(csvfile, fieldnames=("ID","Sequence","Class"))
             self.headers = reader.fieldnames
             for row in reader:
                 self.data.append(row)
@@ -324,8 +327,8 @@ class Tree(object):
         return system_gini_value
     # }}}
 
-    def attribute_gini_index(self, classifier, attribute): # Calculates the gini index value for a particular attribute #{{{
-        """ Docstring Placeholder """
+    def attribute_impurity(self, classifier, attribute): # Calculates the gini index value for a particular attribute #{{{
+        """ Calculates the Gini Index for an attribute """
         attribute_values_count = {} # Counts of the classification values
         attribute_values_set = set()
         attr_class_values_count = {} # Counts of the class values
@@ -362,7 +365,9 @@ class Tree(object):
 
 def main(): # Main function call #{{{
     """ Main Function call for testing Tree class"""
-    my_file='altitude.csv'
+    #my_file='altitude.csv'
+    header = 0 # Turn this option on if there is a header in the csv being read!!!!
+    my_file='training.csv'
     #chi_squared_file='chisquared.csv'
     #my_file='photos.csv'
     #classifier='Class'
@@ -387,12 +392,12 @@ def main(): # Main function call #{{{
     #my_file = 'photos.csv'
     #classifier='Family'
     root = Tree()
-    root.file_read(my_file)
+    root.file_read(my_file, header)
     #root.choose_comparator(classifier)
     #root.write()
     #temp_classifier = 'Family'
     class_label = 'Class'
-    attribute = 'Altitude'
+    attribute = 'Sequence'
     #print root.compute_max_information_gain(classifier)
     #print information_gain=root.information_gain(classifier, attribute)
     #print (information_gain)
@@ -403,7 +408,7 @@ def main(): # Main function call #{{{
     print '========================================'
     print root.base_gini_index(class_label)
     print '========================================'
-    print root.attribute_gini_index(class_label, attribute)
+    print root.attribute_impurity(class_label, attribute)
 
 if __name__ == "__main__":
     main()
