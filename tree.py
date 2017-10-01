@@ -17,6 +17,7 @@ import csv
 import random
 import pdb
 import math
+import collections
 
 class Tree(object):
     """ Docstring Placeholder """
@@ -36,33 +37,46 @@ class Tree(object):
                 reader = csv.DictReader(csvfile)
             else: # Doesn't have a header and using the data on Kaggle
                 reader = csv.DictReader(csvfile, fieldnames=("ID","Sequence","Class"))
-                #reader = csv.DictReader(csvfile, fieldnames=("ID","A","G","T","C","D","N","S","R","Class"))
-                #reader = csv.DictReader(csvfile, fieldnames=("ID","A","G","T","C","Class"))
             self.headers = reader.fieldnames
+            forma = 1
             for row in reader:
-                #print row
-                self.data.append(row)
-                #parse_sequence(reader, 1)
-    # }}}
-
-    def parse_sequence(self, reader, forma): # Parses and takes count of all sequence values within a row #{{{ 
-        """ Docstring Placeholder """
-        if (forma == 1): # DNSR values their own attribute
-            # Pick up sequence value and parse it for each occurance of each field
-            reader.fieldnames = "ID", "A","G","T","C","D","N","S","R","Class"
-            self.headers = reader.fieldnames
-        elif (forma == 2): # Replacing D=;N=;S=;R=;
-            reader.fieldnames = "ID", "A","G","T","C","Class"
-            self.headers = reader.fieldnames
-        elif (forma == 3): # Randomly replacing based on possible values per each ambiguous value
-            reader.fieldnames = "ID", "A","G","T","C","Class"
-            self.headers = reader.fieldnames
-        elif (forma == 4): # Replacing possible values for each ambigious value based on gaussian distribution
-            reader.fieldnames = "ID", "A","G","T","C","Class"
-            self.headers = reader.fieldnames
+                if (forma == 1):
+                # DNSR values their own attribute
+                # Pick up sequence value and parse it for each occurance of each field
+                    sequence = row['Sequence']
+                    data = list(sequence)
+                    sequence_set = {"A","G","T","C","D","N","S","R"}
+                    sequence_counts = dict.fromkeys(sequence_set, 0)
+                    for items in sequence:
+                        sequence_counts[items] = sequence_counts.get(items) + 1
+                    row = dict(list(row.items()) + list(sequence_counts.items()))
+                    row.pop('Sequence',None)
+                    self.data.append(row)
+                    self.headers = "ID","A","G","T","C","D","N","S","R","Class"
+                elif (forma == 2):
+                    # Replacing D=T;N=A;S=C;R=G;
+                    sequence = row['Sequence']
+                    #data = list(sequence)
+                    new_sequence = [sequence.replace(*r) for r in (('D','T'),('N','A'),('S','C'),('R','G'))]
+                    data = list(new_sequence)
+                    sequence_set = {"A","G","T","C"}
+                    sequence_counts = dict.fromkeys(sequence_set, 0)
+                    for items in sequence:
+                        sequence_counts[items] = sequence_counts.get(items) + 1
+                    row = dict(list(row.items()) + list(sequence_counts.items()))
+                    row.pop('Sequence',None)
+                    self.data.append(row)
+                    self.headers = "ID", "A","G","T","C","Class"
+                elif (forma == 3):
+                # Randomly replacing based on possible values per each ambiguous value
+                    reader.fieldnames = "ID", "A","G","T","C","Class"
+                    self.headers = reader.fieldnames
+                elif (forma == 4):
+                # Replacing possible values for each ambigious value based on gaussian distribution
+                    reader.fieldnames = "ID", "A","G","T","C","Class"
+                    self.headers = reader.fieldnames
         return
         #}}}
-
 
     def chi_squared_read(self, filename): #{{{
         """ Docstring Placeholder """
@@ -211,7 +225,7 @@ class Tree(object):
             #print temp_information_gain
             information_gain += temp_information_gain
         return information_gain
-    # }}}
+    # }}} 
 
     def entropy(self, classifier, attribute): #calculates the entropy of a particular attribute #{{{
         """ Docstring Placeholder """
