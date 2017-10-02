@@ -177,29 +177,99 @@ class Tree(object):
         self.data.append(datum)
     # }}}
 
-    def compute_max_information_gain(self, classifier): #{{{
-        """ Docstring Placeholder """
-        entropy_dictionary = {}
+#    def compute_max_information_gain(self, classifier): #{{{
+#        """ Docstring Placeholder """
+#        entropy_dictionary = {}
+#        attribute_values_count = {} #counts of the classification values
+#        attribute_values_set = set()
+#        max_information_gain = 0.0
+#        if (self.data):
+#            temp_attribute_list = self.data[0].keys()
+#            temp_attribute_list.remove(classifier) #list of all attributes except the classifier
+#            entropy_dictionary = dict.fromkeys(temp_attribute_list, 0.0) #set for the value of all attributes
+#            for datum in self.data:
+#                attribute_values_set.add(datum.get(attribute))
+#            attribute_values_count = dict.fromkeys(attribute_values_set, 0)   #from the set of classifier values, create a dictionary for counting them
+#            for datum in self.data:
+#                attribute_values_count[datum.get(classifier)] += 1
+#            for attribute in temp_attribute_list:
+#                for attribute_value in range(1, len(attribute_values_set)):
+#                    attribute.append((float(sorted(attribute_values_set)[attribute_value])-float(sorted(attribute_values_set)[attribute_value])), 0.0)
+#                
+#            #print entropy_dictionary
+#            for attribute in entropy_dictionary.keys():
+#                entropy_dictionary[attribute]=self.information_gain(classifier, attribute)
+#            #print entropy_dictionary
+#            max_information_gain = max(entropy_dictionary.values())
+#            #print max_information_gain
+#            for pair in entropy_dictionary.items():
+#                if (pair[1] == max_information_gain):
+#                    pair_to_return = pair
+#            #print pair_to_return
+#            return pair_to_return[0] #returns just the attribute
+#        else:
+#            print "I have no data to compute the max information gain from"
+#            exit(1)
+#    # }}}
+
+    def compute_max_information_gain(self, classifier):
+        data_matrix_dictionary={}
+        data_matrix=[]
+        temp_list=[]
+        attribute_values_set = set()
+        attribute_split_values_set = set()
         max_information_gain = 0.0
         if (self.data):
             temp_attribute_list = self.data[0].keys()
-            temp_attribute_list.remove(classifier)
-            entropy_dictionary = dict.fromkeys(temp_attribute_list, 0.0)
-            #print entropy_dictionary
-            for attribute in entropy_dictionary.keys():
-                entropy_dictionary[attribute]=self.information_gain(classifier, attribute)
-            #print entropy_dictionary
-            max_information_gain = max(entropy_dictionary.values())
-            #print max_information_gain
-            for pair in entropy_dictionary.items():
-                if (pair[1] == max_information_gain):
-                    pair_to_return = pair
-            #print pair_to_return
-            return pair_to_return[0] #returns just the attribute
-        else:
-            print "I have no data to compute the max information gain from"
-            exit(1)
-    # }}}
+            temp_attribute_list.remove(classifier) #list of all attributes except the classifier
+            temp_attribute_list.remove('ID') #list of all attributes except the classifier and the unique identifier
+            data_matrix_dictionary=dict.fromkeys(temp_attribute_list)
+            for key in data_matrix_dictionary.keys():
+                attribute_values_set=0.0
+                attribute_split_values_set=0.0
+                attribute_values_set = set()
+                attribute_split_values_set = set()
+                for datum in self.data:
+                    attribute_values_set.add(datum.get(key))
+                for i in range(1, len(attribute_values_set)):
+                    attribute_split_values_set.add(float(float(abs(float(sorted(attribute_values_set)[i-1])+(float(sorted(attribute_values_set)[i]))))/2.0))
+                data_matrix_dictionary[key]=dict.fromkeys(attribute_split_values_set, 0.0)
+            print data_matrix_dictionary
+            for attribute in data_matrix_dictionary.keys():
+                for key in data_matrix_dictionary[attribute].keys():
+                    data_matrix_dictionary[attribute][key]=self.compute_information_gain(classifier, attribute, key)
+            print data_matrix_dictionary
+            
+    def compute_information_gain(self, classifier, attribute, split):
+        attribute_values_count = {} #counts of the classification values
+        attribute_values_set = set()
+        forest =[Tree(),Tree()]
+        entropy_summation = 0.0
+        for datum in self.data:                                             #from the values of the classifier, create a set
+            attribute_values_set.add(datum.get(attribute)) 
+        attribute_values_count = dict.fromkeys(attribute_values_set, 0)   #from the set of classifier values, create a dictionary for counting them
+        #for tree in forest:
+        #    forest[tree] = Tree()
+        #print forest.keys()
+        #print forest.values()
+        for datum in self.data:
+            #print datum.get(attribute)
+            if (datum.get(attribute) < split):
+                forest[0].add_data(datum)
+            else:
+                forest[1].add_data(datum) 
+            attribute_values_count[datum.get(attribute)] += 1
+        for tree in forest:
+            #forest[tree].write()
+            #print forest[tree]
+            #print "tree subset base entropy"
+            #print forest[tree].base_entropy(classifier)
+            entropy_summation += (float(float(len(tree.data))/(float(len(self.data)))))*tree.base_entropy(classifier)
+        #print "entropy_summation"
+        #print entropy_summation
+        return entropy_summation
+        
+        return (base_entropy-entropy_summation)
 
     def base_entropy(self, classifier): #evaluates the base information gain, from which other values are subtracted #{{{
         """ Docstring Placeholder """
@@ -322,7 +392,7 @@ class Tree(object):
             for datum in self.data:
                 classifier_values_set.add(datum.get(classifier))
             if (len(classifier_values_set) == 1):
-                self.comparator = int(self.data[0].get(classifier))
+                self.comparator = self.data[0].get(classifier)
                 return
             else:
                 self.comparator = self.compute_max_information_gain(classifier) #this will compute the information gain and use its attribute as its comparator
@@ -470,7 +540,7 @@ def main(): # Main function call #{{{
     #temp_classifier = 'Family'
     #class_label = 'Class'
     #attribute = 'Direction'
-    #print root.compute_max_information_gain(classifier)
+    print root.compute_max_information_gain(class_label)
     #print information_gain=root.information_gain(classifier, attribute)
     #print (information_gain)
     #temp_classifier='Cartoon'
@@ -478,8 +548,8 @@ def main(): # Main function call #{{{
     #print (information_gain)
     #root.file_write("output.dict")
     #print '========================================'
-    print root.base_gini_index(class_label)
-    print '========================================'
+    #print root.base_gini_index(class_label)
+    #print '========================================'
     #print root.attribute_impurity(class_label, attribute)
     #datum = {'key':'20000', 'value':'GCTGGGCCCTGGGCTTCTACCCTGCGGAGATCACACTGACCTGGCAGCGGGATGGCGAGG'}
     #print root.predict(class_label, datum)
