@@ -31,20 +31,20 @@ class Tree(object):
         self.comparator = []
 
     def file_read(self, filename, header): #{{{
-        """ Docstring Placeholder """
+        """ reads in a csv file and parses it according to Kaggle data format or other data used for algorithm validation """
         with open(filename) as csvfile: # Contains a header (test datasets we created for validation)
             if (header == 1):
                 reader = csv.DictReader(csvfile)
             else: # Doesn't have a header and using the data on Kaggle
                 reader = csv.DictReader(csvfile, fieldnames=("ID","Sequence","Class"))
             self.headers = reader.fieldnames
-            forma = 1
+            forma = 2
             for row in reader:
                 if (forma == 1):
                 # DNSR values their own attribute
                 # Pick up sequence value and parse it for each occurance of each field
                     sequence = row['Sequence']
-                    data = list(sequence)
+                    sdata = list(sequence)
                     sequence_set = {"A","G","T","C","D","N","S","R"}
                     sequence_counts = dict.fromkeys(sequence_set, 0)
                     for items in sequence:
@@ -56,9 +56,27 @@ class Tree(object):
                 elif (forma == 2):
                     # Replacing D=T;N=A;S=C;R=G;
                     sequence = row['Sequence']
-                    #data = list(sequence)
-                    new_sequence = [sequence.replace(*r) for r in (('D','T'),('N','A'),('S','C'),('R','G'))]
-                    data = list(new_sequence)
+                    sdata = list(sequence)
+                    sequence_set = {"A","G","T","C"}
+                    sequence_counts = dict.fromkeys(sequence_set, 0)
+                    for items in sequence:
+                        if (items == 'D'):
+                            items = 'T'
+                        elif (items == 'N'):
+                            items = 'A'
+                        elif (items == 'S'):
+                            items = 'C'
+                        elif (items == 'R'):
+                            items = 'G'
+                        sequence_counts[items] = sequence_counts.get(items) + 1
+                    row = dict(list(row.items()) + list(sequence_counts.items()))
+                    row.pop('Sequence',None)
+                    self.data.append(row)
+                    self.headers = "ID","A","G","T","C","Class"
+                elif (forma == 3):
+                # Randomly replacing based on possible values per each ambiguous value
+                    sequence = row['Sequence']
+                    sdata = list(sequence)
                     sequence_set = {"A","G","T","C"}
                     sequence_counts = dict.fromkeys(sequence_set, 0)
                     for items in sequence:
@@ -66,15 +84,19 @@ class Tree(object):
                     row = dict(list(row.items()) + list(sequence_counts.items()))
                     row.pop('Sequence',None)
                     self.data.append(row)
-                    self.headers = "ID", "A","G","T","C","Class"
-                elif (forma == 3):
-                # Randomly replacing based on possible values per each ambiguous value
-                    reader.fieldnames = "ID", "A","G","T","C","Class"
-                    self.headers = reader.fieldnames
+                    self.headers = "ID","A","G","T","C","Class"
                 elif (forma == 4):
                 # Replacing possible values for each ambigious value based on gaussian distribution
-                    reader.fieldnames = "ID", "A","G","T","C","Class"
-                    self.headers = reader.fieldnames
+                    sequence = row['Sequence']
+                    sdata = list(sequence)
+                    sequence_set = {"A","G","T","C"}
+                    sequence_counts = dict.fromkeys(sequence_set, 0)
+                    for items in sequence:
+                        sequence_counts[items] = sequence_counts.get(items) + 1
+                    row = dict(list(row.items()) + list(sequence_counts.items()))
+                    row.pop('Sequence',None)
+                    self.data.append(row)
+                    self.headers = "ID","A","G","T","C","Class"
         return
         #}}}
 
@@ -439,8 +461,8 @@ def main(): # Main function call #{{{
     class_label = 'Class'
     root = Tree()
     root.file_read(my_file, header)
-    root.choose_comparator(class_label)
-    root.file_write("output.dict")
+    #root.choose_comparator(class_label)
+    #root.file_write("output.dict")
   # 
    #my_file='training.csv'
     #chi_squared_file='chisquared.csv'
