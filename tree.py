@@ -17,7 +17,7 @@ import csv
 import random
 import pdb
 import math
-import collections
+import random
 
 class Tree(object):
     """ Docstring Placeholder """
@@ -38,7 +38,7 @@ class Tree(object):
             else: # Doesn't have a header and using the data on Kaggle
                 reader = csv.DictReader(csvfile, fieldnames=("ID","Sequence","Class"))
             self.headers = reader.fieldnames
-            forma = 2
+            forma = 1
             for row in reader:
                 if (forma == 1):
                 # DNSR values their own attribute
@@ -80,6 +80,36 @@ class Tree(object):
                     sequence_set = {"A","G","T","C"}
                     sequence_counts = dict.fromkeys(sequence_set, 0)
                     for items in sequence:
+                        if (items == 'D'):
+                            n = random.randint(0,2)
+                            if (n == 0):
+                                items = 'A'
+                            elif (n == 1):
+                                items = 'G'
+                            else:
+                                items = 'T'
+                        elif (items == 'N'):
+                            n = random.randint(0,3)
+                            if (n == 0):
+                                items = 'A'
+                            elif (n == 1):
+                                items = 'G'
+                            elif (n == 2):
+                                items = 'C'
+                            else:
+                                items = 'T'
+                        elif (items == 'S'):
+                            n = random.randint(0,1)
+                            if (n == 0):
+                                items = 'C'
+                            else:
+                                items = 'G'
+                        elif (items == 'R'):
+                            n = random.randint(0,1)
+                            if (n == 0):
+                                items = 'A'
+                            else:
+                                items = 'G'
                         sequence_counts[items] = sequence_counts.get(items) + 1
                     row = dict(list(row.items()) + list(sequence_counts.items()))
                     row.pop('Sequence',None)
@@ -98,7 +128,7 @@ class Tree(object):
                     self.data.append(row)
                     self.headers = "ID","A","G","T","C","Class"
         return
-        #}}}
+        #}}} 
 
     def chi_squared_read(self, filename): #{{{
         """ Docstring Placeholder """
