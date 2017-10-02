@@ -437,19 +437,20 @@ def main(): # Main function call #{{{
     my_file = 'training.csv'
     header = 0 # Turn this option on if there is a header in the csv being read!!!!
     class_label = 'Class'
-    attribute = 'Sequence'
-
-    #my_file='training.csv'
+    root = Tree()
+    root.file_read(my_file, header)
+    root.choose_comparator(class_label)
+    root.file_write("output.dict")
+  # 
+   #my_file='training.csv'
     #chi_squared_file='chisquared.csv'
     #my_file='photos.csv'
     #classifier='Class'
     #PROBABILITY='0.050'
     #root = Tree()
-    #root.file_read(my_file)
     #root.chi_squared_read(chi_squared_file)
     #print root.chi_squared_headers
     #print root.chi_squared_data
-    #root.choose_comparator(classifier)
     #root.write()
     #print root.chi_squared(classifier, PROBABILITY)
     #temp_classifier='Family'
@@ -463,8 +464,6 @@ def main(): # Main function call #{{{
     #my_file='altitude.csv'
     #my_file = 'photos.csv'
     #classifier='Family'
-    root = Tree()
-    root.file_read(my_file, header)
     #root.choose_comparator(class_label)
     #root.write()
     #temp_classifier = 'Family'
@@ -478,7 +477,7 @@ def main(): # Main function call #{{{
     #print (information_gain)
     #root.file_write("output.dict")
     #print '========================================'
-    print root.base_gini_index(class_label)
+    #print root.base_gini_index(class_label)
     print '========================================'
     #print root.attribute_impurity(class_label, attribute)
     #datum = {'key':'20000', 'value':'GCTGGGCCCTGGGCTTCTACCCTGCGGAGATCACACTGACCTGGCAGCGGGATGGCGAGG'}
