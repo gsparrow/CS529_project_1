@@ -238,6 +238,7 @@ class Tree(object):
         max_information_gain = 0.0
         temp_split=0.0
         temp_maximum=0.0
+        temp_attribute = ""
         if (self.data):
             temp_attribute_list = self.data[0].keys()
             temp_attribute_list.remove(classifier) #list of all attributes except the classifier
@@ -393,7 +394,7 @@ class Tree(object):
                 self.left = Tree()
                 self.right = Tree()
                 while (self.data):
-                    if (int(self.data[0].get(self.comparator)) == 1): #this assumes a binary value
+                    if (self.data[0].get(self.comparator.keys()[0]) < self.comparator.values()[0]):
                         self.left.add_data(self.data[0])
                         self.data.remove(self.data[0])
                     else:
@@ -499,8 +500,8 @@ def main(): # Main function call #{{{
     class_label = 'Class'
     root = Tree()
     root.file_read(my_file, header)
-    #root.choose_comparator(class_label)
-    #root.file_write("output.dict")
+    root.choose_comparator(class_label)
+    root.file_write("output.dict")
   # 
    #my_file='training.csv'
     #chi_squared_file='chisquared.csv'
@@ -529,7 +530,7 @@ def main(): # Main function call #{{{
     #temp_classifier = 'Family'
     #class_label = 'Class'
     #attribute = 'Direction'
-    print root.compute_max_information_gain(class_label)
+    #print root.compute_max_information_gain(class_label)
     #print information_gain=root.information_gain(classifier, attribute)
     #print (information_gain)
     #temp_classifier='Cartoon'
