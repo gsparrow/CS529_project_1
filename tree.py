@@ -229,48 +229,15 @@ class Tree(object):
         self.data.append(datum)
     # }}}
 
-#    def compute_max_information_gain(self, classifier): #{{{
-#        """ Docstring Placeholder """
-#        entropy_dictionary = {}
-#        attribute_values_count = {} #counts of the classification values
-#        attribute_values_set = set()
-#        max_information_gain = 0.0
-#        if (self.data):
-#            temp_attribute_list = self.data[0].keys()
-#            temp_attribute_list.remove(classifier) #list of all attributes except the classifier
-#            entropy_dictionary = dict.fromkeys(temp_attribute_list, 0.0) #set for the value of all attributes
-#            for datum in self.data:
-#                attribute_values_set.add(datum.get(attribute))
-#            attribute_values_count = dict.fromkeys(attribute_values_set, 0)   #from the set of classifier values, create a dictionary for counting them
-#            for datum in self.data:
-#                attribute_values_count[datum.get(classifier)] += 1
-#            for attribute in temp_attribute_list:
-#                for attribute_value in range(1, len(attribute_values_set)):
-#                    attribute.append((float(sorted(attribute_values_set)[attribute_value])-float(sorted(attribute_values_set)[attribute_value])), 0.0)
-#                
-#            #print entropy_dictionary
-#            for attribute in entropy_dictionary.keys():
-#                entropy_dictionary[attribute]=self.information_gain(classifier, attribute)
-#            #print entropy_dictionary
-#            max_information_gain = max(entropy_dictionary.values())
-#            #print max_information_gain
-#            for pair in entropy_dictionary.items():
-#                if (pair[1] == max_information_gain):
-#                    pair_to_return = pair
-#            #print pair_to_return
-#            return pair_to_return[0] #returns just the attribute
-#        else:
-#            print "I have no data to compute the max information gain from"
-#            exit(1)
-#    # }}}
-
-    def compute_max_information_gain(self, classifier):
+    def compute_max_information_gain(self, classifier): # {{{
         data_matrix_dictionary={}
         data_matrix=[]
         temp_list=[]
         attribute_values_set = set()
         attribute_split_values_set = set()
         max_information_gain = 0.0
+        temp_split=0.0
+        temp_maximum=0.0
         if (self.data):
             temp_attribute_list = self.data[0].keys()
             temp_attribute_list.remove(classifier) #list of all attributes except the classifier
@@ -286,16 +253,27 @@ class Tree(object):
                 for i in range(1, len(attribute_values_set)):
                     attribute_split_values_set.add(float(float(abs(float(sorted(attribute_values_set)[i-1])+(float(sorted(attribute_values_set)[i]))))/2.0))
                 data_matrix_dictionary[key]=dict.fromkeys(attribute_split_values_set, 0.0)
-            print data_matrix_dictionary
+            #print data_matrix_dictionary
             for attribute in data_matrix_dictionary.keys():
                 for key in data_matrix_dictionary[attribute].keys():
                     data_matrix_dictionary[attribute][key]=self.compute_information_gain(classifier, attribute, key)
-            print data_matrix_dictionary
+            #print data_matrix_dictionary
+            for attribute in data_matrix_dictionary.keys():
+                for key in data_matrix_dictionary[attribute].keys():
+                    if (data_matrix_dictionary[attribute][key] > temp_maximum):
+                        temp_maximum = data_matrix_dictionary[attribute][key]
+                        temp_split = key
+                        temp_attribute = attribute
+            #print {temp_attribute: temp_split}
+            return {temp_attribute: temp_split}
+    #}}}
             
-    def compute_information_gain(self, classifier, attribute, split):
+    def compute_information_gain(self, classifier, attribute, split): #{{{
         attribute_values_count = {} #counts of the classification values
         attribute_values_set = set()
-        forest =[Tree(),Tree()]
+        forest =[]
+        forest.append(Tree())
+        forest.append(Tree())
         entropy_summation = 0.0
         for datum in self.data:                                             #from the values of the classifier, create a set
             attribute_values_set.add(datum.get(attribute)) 
@@ -319,9 +297,9 @@ class Tree(object):
             entropy_summation += (float(float(len(tree.data))/(float(len(self.data)))))*tree.base_entropy(classifier)
         #print "entropy_summation"
         #print entropy_summation
-        return entropy_summation
-        
-        return (base_entropy-entropy_summation)
+        #return entropy_summation
+        return ((self.base_entropy(classifier))-entropy_summation)
+    #}}}
 
     def base_entropy(self, classifier): #evaluates the base information gain, from which other values are subtracted #{{{
         """ Docstring Placeholder """
@@ -348,46 +326,6 @@ class Tree(object):
             information_gain += temp_information_gain
         return information_gain
     # }}} 
-
-    def entropy(self, classifier, attribute): #calculates the entropy of a particular attribute #{{{
-        """ Docstring Placeholder """
-        attribute_values_count = {} #counts of the classification values
-        attribute_values_set = set()
-        forest = {}
-        entropy_summation = 0.0
-        for datum in self.data:                                             #from the values of the classifier, create a set
-            attribute_values_set.add(datum.get(attribute))
-        forest = dict.fromkeys(attribute_values_set)   #from the set of classifier values, create a dictionary for counting them
-                                                       # DO not use the default value with objects, as it just links all things
-                                                       #  in the dictionary to the same object
-        attribute_values_count = dict.fromkeys(attribute_values_set, 0)   #from the set of classifier values, create a dictionary for counting them
-        for tree in forest.keys():
-            forest[tree] = Tree()
-        #print forest.keys()
-        #print forest.values()
-        for datum in self.data:
-            #print datum.get(attribute)
-            forest[datum.get(attribute)].add_data(datum)
-            attribute_values_count[datum.get(attribute)] += 1
-        for tree in forest.keys():
-            #forest[tree].write()
-            #print forest[tree]
-            #print "tree subset base entropy"
-            #print forest[tree].base_entropy(classifier)
-            entropy_summation += (float(float(attribute_values_count.get(tree))/(float(len(self.data)))))*forest[tree].base_entropy(classifier)
-        #print "entropy_summation"
-        #print entropy_summation
-        return entropy_summation
-        #}}}
-
-    def information_gain(self, classifier, attribute): # #{{{
-        """ Docstring Placeholder """
-        #print "base_entropy"
-        #print self.base_entropy(classifier)
-        #print "summation"
-        #print self.entropy(classifier, attribute)
-        return self.base_entropy(classifier) - self.entropy(classifier, attribute)
-         #}}}
 
     def chi_squared(self, attribute, probability): #{{{
         """ Docstring Placeholder """
