@@ -337,6 +337,8 @@ class Tree(object):
         critical_value = 0.0 #from the chi_squared csv
         temp_value = 0.0
         chi_squared_value = 0.0
+        if (len(self.data) < 2):
+            return True
         for datum in self.data:
             attribute_values_set.add(datum.get(attribute))
         attribute_values_count = dict.fromkeys(attribute_values_set, 0)
@@ -344,6 +346,31 @@ class Tree(object):
         for datum in self.data:
             attribute_values_count[datum.get(attribute)] += 1
         degrees_of_freedom = ((len(attribute_values_set))-1)
+        # Large if statement to prevent going out of bounds of the array for large degrees of freedom {{{ {{{
+        #   If more accuracy is needed, a replacement of the csv containing the chi squared table with
+        #   a more fine-grained chi squared table with more values and more degrees of freedom
+        #   Because we do not have an infinitely defined chi squared table and are not allowed functions
+        #   to calculate such a thing from mathematicians who knew what they were doing, the simplest
+        #   solution is to simply use rounding. This should produce a good enough approximation. }}}
+        if (degrees_of_freedom <= 0): 
+            degrees_of_freedom = 1
+        elif ((degrees_of_freedom > 30) and (degrees_of_freedom <= 35)): 
+            degrees_of_freedom = 30
+        elif ((degrees_of_freedom > 35) and (degrees_of_freedom <= 45)):
+            degrees_of_freedom = 31
+        elif ((degrees_of_freedom > 45) and (degrees_of_freedom <= 55)):
+            degrees_of_freedom = 32
+        elif ((degrees_of_freedom > 55) and (degrees_of_freedom <= 65)):
+            degrees_of_freedom = 33
+        elif ((degrees_of_freedom > 65) and (degrees_of_freedom <= 75)):
+            degrees_of_freedom = 34
+        elif ((degrees_of_freedom > 75) and (degrees_of_freedom <= 85)):
+            degrees_of_freedom = 35
+        elif ((degrees_of_freedom > 85) and (degrees_of_freedom <= 95)):
+            degrees_of_freedom = 36
+        elif (degrees_of_freedom > 95):
+            degrees_of_freedom = 37
+        # }}}
         #print degrees_of_freedom
         expected_value = float(float(len(self.data))/float(len(attribute_values_set)))
         #print expected_value
@@ -362,13 +389,20 @@ class Tree(object):
             #print "Temp value"
             #print temp_value
             chi_squared_value += temp_value
-        degrees_fo_freedom = 20
-        critical_value = self.chi_squared_data[(degrees_of_freedom-1)].get(probability)
-        print critical_value
-        print chi_squared_value
+        #degrees_of_freedom = 20
+        #print degrees_of_freedom
+        if (((degrees_of_freedom-1) < len(self.chi_squared_data)) and ((degrees_of_freedom-1) >= 0)):
+            critical_value = self.chi_squared_data[(degrees_of_freedom-1)].get(probability)
+        else:
+            #print degrees_of_freedom
+            return True
+        #print critical_value
+        #print chi_squared_value
         if (critical_value >= chi_squared_value):
+            print "True"
             return True #Null hypothesis is correct
         else:
+            print "False"
             return False #Null hypothesis is rejected
     #}}}
 
@@ -382,8 +416,8 @@ class Tree(object):
         if (self.data):
             for datum in self.data:
                 classifier_values_set.add(datum.get(classifier))
-            if (len(classifier_values_set) == 1):
-                self.comparator = self.data[0].get(classifier)
+            if (self.chi_squared(classifier, '0.050')):
+                self.comparator = 'True'
                 return
             else:
                 self.comparator = self.compute_max_information_gain(classifier) #this will compute the information gain and use its attribute as its comparator
