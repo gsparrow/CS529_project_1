@@ -146,7 +146,7 @@ class Tree(object):
     def file_write_inorder(self, filename):
         """ Docstring Placeholder """
         if (self.left):
-            self.left.write()
+            self.left.file_write_inorder(filename)
         with open(filename, 'a') as csvfile:
             writer = csv.DictWriter(csvfile, fieldnames=self.headers)
             writer.writeheader()
@@ -154,7 +154,7 @@ class Tree(object):
                 writer.writerow(datum)
             csvfile.write( "\n" )
         if (self.right):
-            self.right.write()
+            self.right.file_write_inorder(filename)
 
     def file_write_preorder(self, filename):
         """ Docstring Placeholder """
@@ -165,16 +165,16 @@ class Tree(object):
                 writer.writerow(datum)
             csvfile.write("\n" )
         if (self.left):
-            self.left.write()
+            self.left.file_write_preorder(filename)
         if (self.right):
-            self.right.write()
+            self.right.file_write_preorder(filename)
 
     def file_write_postorder(self, filename):
         """ Docstring Placeholder """
         if (self.left):
-            self.left.write()
+            self.left.file_write_postorder(filename)
         if (self.right):
-            self.right.write()
+            self.right.file_write_postorder(filename)
         with open(filename, 'a') as csvfile:
             writer = csv.DictWriter(csvfile, fieldnames=self.headers)
             writer.writeheader()
