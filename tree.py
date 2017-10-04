@@ -15,7 +15,7 @@
 import sys
 import csv
 import random
-import pdb
+import pdb #for debugging
 import math
 import random
 
@@ -29,6 +29,11 @@ class Tree(object):
         self.chi_squared_headers = []
         self.chi_squared_data = []
         self.comparator = []
+
+    def copy_tree(self, copy_from):
+        self.headers=copy_from.headers
+        self.chi_squared_headers=copy_from.chi_squared_headers
+        self.chi_squared_data=copy_from.chi_squared_data
 
     def file_read(self, filename, header): #{{{
         """ reads in a csv file and parses it according to Kaggle data format or other data used for algorithm validation """
@@ -391,8 +396,12 @@ class Tree(object):
             chi_squared_value += temp_value
         #degrees_of_freedom = 20
         #print degrees_of_freedom
-        if (((degrees_of_freedom-1) < len(self.chi_squared_data)) and ((degrees_of_freedom-1) >= 0)):
-            critical_value = self.chi_squared_data[(degrees_of_freedom-1)].get(probability)
+        if (degrees_of_freedom-1) < len(self.chi_squared_data):
+            if (degrees_of_freedom-1)>= 0:
+                critical_value = self.chi_squared_data[(degrees_of_freedom-1)].get(probability)
+                print critical_value
+            else:
+                return true
         else:
             #print degrees_of_freedom
             return True
@@ -426,7 +435,9 @@ class Tree(object):
                 #temp_headers.remove(classifier)
                 #self.comparator=random.choice(temp_headers) #this is what chooses the comparator of the node, in this case psuedorandomness
                 self.left = Tree()
+                self.left.copy_tree(self)
                 self.right = Tree()
+                self.right.copy_tree(self)
                 while (self.data):
                     if (self.data[0].get(self.comparator.keys()[0]) < self.comparator.values()[0]):
                         self.left.add_data(self.data[0])
@@ -530,20 +541,20 @@ def main(): # Main function call #{{{
 """
 
     my_file = 'training.csv'
+    chi_squared_file='chisquared.csv'
     header = 0 # Turn this option on if there is a header in the csv being read!!!!
     class_label = 'Class'
     root = Tree()
     root.file_read(my_file, header)
+    root.chi_squared_read(chi_squared_file)
     root.choose_comparator(class_label)
     root.file_write("output.dict")
   # 
    #my_file='training.csv'
-    #chi_squared_file='chisquared.csv'
     #my_file='photos.csv'
     #classifier='Class'
     #PROBABILITY='0.050'
     #root = Tree()
-    #root.chi_squared_read(chi_squared_file)
     #print root.chi_squared_headers
     #print root.chi_squared_data
     #root.write()
